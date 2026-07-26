@@ -9,14 +9,22 @@ import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import Image from "@tiptap/extension-image";
+import TextAlign from "@tiptap/extension-text-align";
 import ImageResize from "tiptap-extension-resize-image";
 import Underline from '@tiptap/extension-underline'
+import FontFamily from '@tiptap/extension-font-family'
+import { Color } from '@tiptap/extension-color'
+import Highlight from '@tiptap/extension-highlight'
+import TextStyle from "@tiptap/extension-text-style";
+import Link from '@tiptap/extension-link';
 
 import { useEditorStore } from "@/store/use-editor-store";
+import { FontSizeExtension } from "@/extensions/font-size"
 
 const Editor = () => {
-  const { setEditor } = useEditorStore();
+  const { setEditor } = useEditorStore() ?? {};
   const editor = useEditor({
+    immediatelyRender: false,
     onCreate({ editor }) {
       setEditor(editor);
     },
@@ -41,19 +49,32 @@ const Editor = () => {
     },
     extensions: [
       StarterKit,
+      FontSizeExtension,
       TaskList,
+      TextAlign.configure({
+        types: ["heading", "paragraph"]
+      }),
       TaskItem.configure({
         nested: true,
       }),
       Table.configure({
         resizable: true,
       }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: 'https',
+      }),
       TableRow,
       TableHeader,
       TableCell,
       Image,
       ImageResize, Underline,
-    ], // define your extension array
+      FontFamily,
+      TextStyle,
+      Color,
+      Highlight.configure({ multicolor: true })
+    ],
     content: `
         <table>
           <tbody>
@@ -69,7 +90,7 @@ const Editor = () => {
             </tr>
           </tbody>
         </table>
-      `, // initial content
+      `,
     editorProps: {
       attributes: {
         style: "padding-left: 56px; padding-right: 56px;",
