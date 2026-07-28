@@ -2,7 +2,7 @@
 
 import { SketchPicker, type ColorResult } from 'react-color'
 import { cn } from '@/lib/utils';
-import { AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, BoldIcon, ChevronDownIcon, HighlighterIcon, ImageIcon, Italic, ItalicIcon, Link2Icon, ListIcon, ListOrderedIcon, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, MinusIcon, PlusIcon, PrinterIcon, Redo2Icon, RemoveFormattingIcon, SearchIcon, SpellCheckIcon, UnderlineIcon, Undo2Icon, UploadIcon } from 'lucide-react';
+import { AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, BoldIcon, ChevronDownIcon, HighlighterIcon, ImageIcon,  ItalicIcon, Link2Icon, ListCollapse, ListCollapseIcon, ListIcon, ListOrderedIcon, ListTodoIcon, LucideIcon, MessageSquarePlusIcon, MinusIcon, PlusIcon, PrinterIcon, Redo2Icon, RemoveFormattingIcon, SearchIcon, SpellCheckIcon, UnderlineIcon, Undo2Icon, UploadIcon } from 'lucide-react';
 import React, { useState } from 'react'
 import { useEditorStore } from '@/store/use-editor-store';
 import { Separator } from '@/components/ui/separator';
@@ -12,11 +12,58 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Level } from '@tiptap/extension-heading';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
+
+const LineHeightButton = () => {
+  const { editor } = useEditorStore()
+
+  const lineHeights = [
+    {
+      label: "Default",
+      value: "normal",
+    },
+    {
+      label: "Single",
+      value: "1",
+    },
+    {
+      label: "1.15",
+      value: "1.15",
+    },
+    {
+      label: "1.5",
+      value: "1.5",
+    },
+    {
+      label: "Double",
+      value: "2",
+    },
+  ]
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className={cn('h-7 min-w-7 shrink-0 flex items-center justify-center rounded-sm hover:bg-neutral-200/80 px-1.5 overflow-hidden flex-col text-sm')}>
+          <ListCollapseIcon className="size-4" /></button></DropdownMenuTrigger>
+      <DropdownMenuContent className="bg-white p-0">
+        {lineHeights.map(({ label, value }) => {
+          return (
+            <button key={value} onClick={() => {
+              editor?.chain().focus().setLineHeight(value).run()
+            }}
+              className={cn("flex items-center gap-x-2 px-2 py-1 w-full rounded-sm hover:bg-neutral-200/80", editor?.getAttributes("paragraph").lineHeight === value && "bg-neutral-200/80")}>
+              <span className="text-sm">{label}</span>
+            </button>
+          )
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
 const AlignButton = () => {
   const { editor } = useEditorStore()
@@ -53,7 +100,7 @@ const AlignButton = () => {
         {alignments.map(({ label, value, icon: Icon }) => {
           return (
             <button key={value} onClick={() => editor?.chain().focus().setTextAlign(value).run()}
-              className={cn("flex items-center gap-x-2 px-2 py-1 rounded-sm gover:bg-neutral-200/80", editor?.isActive({ textAlign: value }) && "bg-neutral-200/80")}>
+              className={cn("flex items-center gap-x-2 px-2 py-1 rounded-sm w-full hover:bg-neutral-200/80", editor?.isActive({ textAlign: value }) && "bg-neutral-200/80")}>
               <Icon className="size-4" />
               <span className="text-sm">{label}</span>
             </button>
@@ -161,7 +208,7 @@ const ListButton = () => {
         {lists.map(({ label, icon: Icon, onClick, isActive }) => {
           return (
             <button key={label} onClick={onClick}
-              className={cn("flex items-cen ter gap-x-2 px-2 py-1 rounded-sm gover:bg-neutral-200/80", isActive() && "bg-neutral-200/80")}>
+              className={cn("flex items-center gap-x-2 px-2 py-1 rounded-sm w-full hover:bg-neutral-200/80", isActive() && "bg-neutral-200/80")}>
               <Icon className="size-4" />
               <span className="text-sm">{label}</span>
             </button>
@@ -531,7 +578,7 @@ const Toolbar = () => {
       <LinkButton />
       <ImageButton />
       <AlignButton />
-      {/* TODO: Line height */}
+      <LineHeightButton />
       <ListButton />
 
     </div>
